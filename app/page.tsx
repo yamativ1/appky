@@ -95,7 +95,7 @@ export default function HomePage() {
             <SelectTrigger className="w-48">
               <SelectValue placeholder="Filter by type" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-white shadow-md rounded-md border">
               <SelectItem value="All">All</SelectItem>
               <SelectItem value="Investor">Investor</SelectItem>
               <SelectItem value="Startup">Startup</SelectItem>
