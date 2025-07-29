@@ -9,7 +9,7 @@ type Props = {
 export default function NetworkHeader({ attendeeCount }: Props) {
   return (
     <div className="bg-white border-b border-gray-200">
-      <div className="max-w-7xl mx-auto px-4 py-6 flex justify-between items-center">
+      <div className="max-w-7xl mx-auto px-2 py-4 flex justify-between items-center h-[120px]">
         <div className="flex items-center gap-2">
           <Users className="w-10 h-10 text-blue-600" />
           <div>
