@@ -104,10 +104,10 @@ export default function UserCard({ user }: UserCardProps) {
             )}
           </div>
 
-          {/* Description */}
+          {/* Description 
           <p className="text-xs text-gray-600 line-clamp-2 leading-relaxed px-2 sm:px-2 lg:px-0 hidden sm:block">
             {user.description}
-          </p>
+          </p> */}
 
           {/* Location & Connections */}
           <div className="flex items-center justify-between w-full text-xs text-gray-500 pt-2 sm:pt-2 border-t border-gray-100 px-1 sm:px-2 lg:px-0 min-w-0">

@@ -183,7 +183,7 @@ export default async function ProfilePage({
               </CardContent>
             </Card>
             <Card>
-              <CardHeader><CardTitle>Experience</CardTitle></CardHeader>
+              <CardHeader><CardTitle>Remarks</CardTitle></CardHeader>
               <CardContent>{user.remarks}</CardContent>
             </Card>
           </div>
@@ -191,7 +191,7 @@ export default async function ProfilePage({
           {/* 右 */}
           <div className="space-y-4">
             <Card>
-              <CardHeader><CardTitle>Expertise</CardTitle></CardHeader>
+              <CardHeader><CardTitle>Free Card1</CardTitle></CardHeader>
               <CardContent className="flex flex-wrap gap-2">
                 {user.annualapr.map((skill, i) => (
                   <Badge key={i} variant="secondary">{skill}</Badge>
@@ -199,7 +199,7 @@ export default async function ProfilePage({
               </CardContent>
             </Card>
             <Card>
-              <CardHeader><CardTitle>Contact</CardTitle></CardHeader>
+              <CardHeader><CardTitle>Free Card2</CardTitle></CardHeader>
               <CardContent className="space-y-2 text-sm">
                 <div className="flex items-center gap-2"><MapPin className="w-4 h-4" />{user.location}</div>
                 <div className="flex items-center gap-2"><Users className="w-4 h-4" />{user.raised.toLocaleString()} raised</div>
