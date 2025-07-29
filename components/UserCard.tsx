@@ -64,22 +64,24 @@ export default function UserCard({ user }: UserCardProps) {
   return (
     <Card className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-gray-200 w-full">
       <CardContent className="p-3 sm:p-4 lg:p-6">
-        <div className="flex flex-col items-center text-center space-y-2 sm:space-y-3 lg:space-y-4">
+      <div className="flex flex-col items-center text-center space-y-4 sm:space-y-3 lg:space-y-4">
           {/* Profile Photo */}
           <div className="relative">
-            <img
-              src={photoUrl}
-              alt={user.name}
-              className="w-16 h-16 sm:w-16 sm:h-16 lg:w-20 lg:h-20 rounded-full object-cover border-2 sm:border-4 border-white shadow-md"
-            />
-            <div className="absolute bottom-1 -right-1 sm:-bottom-4 sm:-right-2 z-10">
-              <Badge 
-                variant="outline" 
-                className={`text-xs px-1.5 py-0.5 sm:px-1.5 lg:px-2 lg:py-1 ${attributeColors[userCategory]} whitespace-nowrap`}
-              >
-                {user.title}
-              </Badge>
-            </div>
+          <img
+            src={photoUrl}
+            alt={user.name}
+            className="w-16 h-16 sm:w-16 sm:h-16 lg:w-20 lg:h-20 rounded-full object-cover border-2 sm:border-4 border-white shadow-md mb-5 sm:mb-0"
+          />
+
+          <div className="absolute -bottom-[5px] -right-1 sm:-bottom-4 sm:-right-2 z-10">
+            <Badge 
+              variant="outline" 
+              className={`text-xs px-1.5 py-0.5 sm:px-1.5 lg:px-2 lg:py-1 ${attributeColors[userCategory]} whitespace-nowrap`}
+            >
+              {user.title}
+            </Badge>
+          </div>
+
           </div>
 
           {/* User Info */}
