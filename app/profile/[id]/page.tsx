@@ -8,10 +8,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { BackButton, ActionButtons, ContactButton } from '@/components/ProfileInteraction';
 
-interface ProfilePageProps {
-  params: { id: string };
-}
-
 interface RawUser {
   id: string;
   name: string;
@@ -55,20 +51,16 @@ const stageColors = {
   'Platform Management': 'bg-gray-100 text-gray-800'
 };
 
-// title → カテゴリ分類
 function classifyTitle(titleRaw: string): keyof typeof attributeColors {
   const title = titleRaw.toLowerCase();
-
   if (/(investor|vc|venture|angel|scout|partner|capital|lp|gp|deal flow)/.test(title)) return 'Investor';
   if (/(founder|co[-\s]?founder|ceo|cto|cxo|startup|entrepreneur)/.test(title)) return 'Startup';
   if (/(engineer|developer|software|technical|cpo|product manager)/.test(title)) return 'Engineer';
   if (/(vp|head of|manager|director|executive|lead|gm|principal)/.test(title)) return 'Corporate';
   if (/(advisor|consultant|attorney|counsel|mentor|strategist|staff)/.test(title)) return 'Advisor';
-
   return 'Other';
 }
 
-// アバターインデックス（0〜99）
 function getAvatarIndex(userId: string): number {
   let hash = 0;
   for (let i = 0; i < userId.length; i++) {
@@ -77,14 +69,22 @@ function getAvatarIndex(userId: string): number {
   return Math.abs(hash) % 100;
 }
 
-export async function generateStaticParams() {
+export async function generateStaticParams(): Promise<Array<{ params: { id: string } }>> {
   const filePath = path.join(process.cwd(), 'public/data/participants.csv');
   const csv = fs.readFileSync(filePath, 'utf-8');
   const { data } = Papa.parse(csv, { header: true, skipEmptyLines: true });
-  return data.map((user: any) => ({ id: user.id }));
+
+  return data.map((user: any) => ({
+    params: { id: user.id },
+  }));
 }
 
-export default function ProfilePage({ params }: ProfilePageProps) {
+
+export default async function ProfilePage({
+  params,
+}: {
+  params: any;
+}) {
   const filePath = path.join(process.cwd(), 'public/data/participants.csv');
   const csv = fs.readFileSync(filePath, 'utf-8');
   const { data } = Papa.parse(csv, { header: true, skipEmptyLines: true });
@@ -96,14 +96,13 @@ export default function ProfilePage({ params }: ProfilePageProps) {
     ...rawUser,
     raised: Number(rawUser.raised),
     annualapr: Array.isArray(rawUser.annualapr)
-  ? rawUser.annualapr
-  : ((rawUser.annualapr as string) || '')
-      .split(',')
-      .map((s: string) => s.trim())
-      .filter((s: string) => s.length > 0)
-
+      ? rawUser.annualapr
+      : ((rawUser.annualapr as string) || '')
+          .split(',')
+          .map((s: string) => s.trim())
+          .filter((s: string) => s.length > 0),
   };
-  
+
   const userCategory = classifyTitle(user.title);
   const avatarIndex = getAvatarIndex(user.id);
   const photoUrl = user.photo?.trim().startsWith('http')
@@ -112,7 +111,6 @@ export default function ProfilePage({ params }: ProfilePageProps) {
   const normalizedUrl = user.linkedinurl?.startsWith('http')
     ? user.linkedinurl
     : `https://${user.linkedinurl}`;
-  
 
   return (
     <div className="min-h-screen bg-gray-50 overflow-x-hidden">
@@ -120,7 +118,6 @@ export default function ProfilePage({ params }: ProfilePageProps) {
         <div className="max-w-4xl mx-auto px-4 py-4 sm:py-6">
           <BackButton />
           <div className="flex flex-col lg:flex-row gap-4 sm:gap-6 items-center lg:items-start">
-            {/* Profile Photo + Name + Title */}
             <div className="flex flex-col items-center lg:items-start">
               <img
                 src={photoUrl}
@@ -134,7 +131,12 @@ export default function ProfilePage({ params }: ProfilePageProps) {
                     {user.title}
                   </Badge>
                   {user.stage && (
-                    <Badge variant="secondary" className={stageColors[user.stage as unknown as keyof typeof stageColors]}>
+                    <Badge
+                      variant="secondary"
+                      className={
+                        stageColors[user.stage as keyof typeof stageColors]
+                      }
+                    >
                       {user.stage}
                     </Badge>
                   )}
@@ -142,7 +144,6 @@ export default function ProfilePage({ params }: ProfilePageProps) {
               </div>
             </div>
 
-            {/* Quick Stats */}
             <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 w-full">
               <Card>
                 <CardContent className="p-3 sm:p-4 text-center">
@@ -153,7 +154,6 @@ export default function ProfilePage({ params }: ProfilePageProps) {
                   <p className="font-semibold text-gray-900 truncate">{user.stage}</p>
                 </CardContent>
               </Card>
-
               <Card>
                 <CardContent className="p-3 sm:p-4 text-center">
                   <div className="flex items-center justify-center mb-2">
@@ -163,7 +163,6 @@ export default function ProfilePage({ params }: ProfilePageProps) {
                   <p className="font-semibold text-gray-900">{user.annualapr.toLocaleString()}</p>
                 </CardContent>
               </Card>
-
               <Card>
                 <CardContent className="p-3 sm:p-4 text-center">
                   <div className="flex items-center justify-center mb-2">
@@ -181,7 +180,6 @@ export default function ProfilePage({ params }: ProfilePageProps) {
 
       <div className="max-w-4xl mx-auto px-4 py-6 sm:py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
-          {/* Left Column */}
           <div className="lg:col-span-2 space-y-4">
             <Card>
               <CardHeader>
@@ -209,7 +207,6 @@ export default function ProfilePage({ params }: ProfilePageProps) {
             </Card>
           </div>
 
-          {/* Right Column */}
           <div className="space-y-4">
             <Card>
               <CardHeader>

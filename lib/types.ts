@@ -5,7 +5,7 @@ export type User = {
   company: string;
   industry: string[];
   title: 'Investor' | 'Startup' | 'Engineer' | 'Corporate' | 'Advisor' | 'Other';
-  stage: string[];
+  stage: string;
   objective: string[];
   location: string;
   raised: string[];
