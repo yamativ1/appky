@@ -19,7 +19,7 @@ interface RawUser {
   company: string;
   industry: string[];
   title: string;
-  stage: string[];
+  stage: string;
   objective: string[];
   location: string;
   raised: string[];
@@ -32,7 +32,7 @@ interface RawUser {
 }
 
 interface User extends Omit<RawUser, 'raised'> {
-  raised: string[];
+  raised: number;
 }
 
 const attributeColors = {
@@ -94,15 +94,15 @@ export default function ProfilePage({ params }: ProfilePageProps) {
 
   const user: User = {
     ...rawUser,
-    raised: rawUser.raised || '-', // 文字列のまま使う（または空なら "-"）
+    raised: Number(rawUser.raised),
     annualapr: Array.isArray(rawUser.annualapr)
-      ? rawUser.annualapr
-      : ((rawUser.annualapr as string) || '')
-          .split(',')
-          .map((s: string) => s.trim())
-          .filter((s: string) => s.length > 0)
+  ? rawUser.annualapr
+  : ((rawUser.annualapr as string) || '')
+      .split(',')
+      .map((s: string) => s.trim())
+      .filter((s: string) => s.length > 0)
+
   };
-  
   
   const userCategory = classifyTitle(user.title);
   const avatarIndex = getAvatarIndex(user.id);
