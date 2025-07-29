@@ -122,8 +122,9 @@ export default function HomePage() {
       </div>
 
       {/* Filter */}
-      <div className="sticky top-[120px] z-40 bg-gray-50 border-b h-[100px] will-change-transform">
-        <div className="max-w-7xl mx-auto px-4 h-full flex flex-col sm:flex-row gap-2 items-center justify-center">
+      <div className="sticky top-[120px] z-40 bg-gray-50 border-b h-[135px] will-change-transform">
+      <div className="max-w-7xl mx-auto px-4 h-full flex flex-col sm:flex-row gap-y-1 sm:gap-1 items-start justify-center py-1">
+
           <div className="h-full flex items-center w-full sm:w-1/2">
             <Input
               type="text"
