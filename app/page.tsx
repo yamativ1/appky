@@ -4,10 +4,10 @@ import { useEffect, useState } from 'react';
 import Papa from 'papaparse';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import {  Select,  SelectContent,  SelectItem,  SelectTrigger,  SelectValue} from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import UserCard from '@/components/UserCard';
 import NetworkHeader from '@/components/NetworkHeader';
-import { SelectItemNoCheck } from '@/components/SelectItemNoCheck'; 
+import { SelectItemNoCheck } from '@/components/SelectItemNoCheck';
 
 type User = {
   id: string;
@@ -114,63 +114,66 @@ export default function HomePage() {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50 overflow-x-hidden">
-      <NetworkHeader attendeeCount={users.length} />
-      <main className="max-w-7xl mx-auto px-4 py-6 sm:py-8">
-        <div className="mb-6 flex flex-col sm:flex-row gap-4 items-start sm:items-center flex-wrap">
-          {/* Search */}
-          <Input
-            type="text"
-            placeholder="Search by keyword"
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-            className="w-full sm:w-1/2"
-          />
+    <div className="min-h-screen bg-gray-50">
 
-          {/* Title Filter */}
-          <Select value={selectedAttribute} onValueChange={setSelectedAttribute}>
-            <SelectTrigger className="w-48">
-              <SelectValue>
-                {selectedAttribute === 'All' ? 'Title' : selectedAttribute}
-              </SelectValue>
-            </SelectTrigger>
-            <SelectContent className="bg-white shadow-lg rounded-md border border-gray-200">
-              <SelectItemNoCheck value="All">All</SelectItemNoCheck>
-              {titleOptions.map((title) => (
-                <SelectItemNoCheck key={title} value={title}>
-                  {title}
-                </SelectItemNoCheck>
-              ))}
-            </SelectContent>
-          </Select>
+      {/* Header */}
+      <div className="sticky top-0 z-50 bg-white border-b">
+        <NetworkHeader attendeeCount={users.length} />
+      </div>
 
-          {/* Stage Filter */}
-          <Select value={selectedStage} onValueChange={setSelectedStage}>
-            <SelectTrigger className="w-48">
-              <SelectValue>
-                {selectedStage === 'All' ? 'Stage' : selectedStage}
-              </SelectValue>
-            </SelectTrigger>
-            <SelectContent className="bg-white shadow-lg rounded-md border border-gray-200">
-              <SelectItemNoCheck value="All">All</SelectItemNoCheck>
-              {stageOptions.map((stage) => (
-                <SelectItemNoCheck key={stage} value={stage}>
-                  {stage}
-                </SelectItemNoCheck>
-              ))}
-            </SelectContent>
+      {/* Filter */}
+      <div className="sticky top-[96px] z-40 bg-gray-50 border-b h-[96px] will-change-transform">
+        <div className="max-w-7xl mx-auto px-4 h-full flex flex-col sm:flex-row gap-2 items-center justify-center">
+          <div className="h-full flex items-center w-full sm:w-1/2">
+            <Input
+              type="text"
+              placeholder="Search by keyword"
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+              className="h-[40px] w-full text-sm"
+            />
+          </div>
 
-          </Select>
+          <div className="h-full flex flex-row gap-2 w-full sm:w-auto items-center">
+            <Select value={selectedAttribute} onValueChange={setSelectedAttribute}>
+              <SelectTrigger className="h-[40px] w-full sm:w-48 text-sm">
+                <SelectValue>{selectedAttribute === 'All' ? 'Title' : selectedAttribute}</SelectValue>
+              </SelectTrigger>
+              <SelectContent className="bg-white shadow-lg border border-gray-200">
+                <SelectItemNoCheck value="All">All</SelectItemNoCheck>
+                {titleOptions.map((title) => (
+                  <SelectItemNoCheck key={title} value={title}>
+                    {title}
+                  </SelectItemNoCheck>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Select value={selectedStage} onValueChange={setSelectedStage}>
+              <SelectTrigger className="h-[40px] w-full sm:w-48 text-sm">
+                <SelectValue>{selectedStage === 'All' ? 'Stage' : selectedStage}</SelectValue>
+              </SelectTrigger>
+              <SelectContent className="bg-white shadow-lg border border-gray-200">
+                <SelectItemNoCheck value="All">All</SelectItemNoCheck>
+                {stageOptions.map((stage) => (
+                  <SelectItemNoCheck key={stage} value={stage}>
+                    {stage}
+                  </SelectItemNoCheck>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
+      </div>
 
-        {/* User list */}
+      {/* Main content */}
+      <main className="max-w-7xl mx-auto px-4 py-6 sm:py-8">
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {filteredUsers.map((user) => (
             <UserCard key={user.id} user={user} />
           ))}
         </div>
 
-        {/* Load more */}
         <div className="text-center mt-10">
           <Button variant="outline">Load More Connections</Button>
         </div>
