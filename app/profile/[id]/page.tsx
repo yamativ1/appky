@@ -189,7 +189,7 @@ export default async function ProfilePage({
           </div>
 
           {/* 右 */}
-          <div className="space-y-4">
+          {/*<div className="space-y-4">
             <Card>
               <CardHeader><CardTitle>Free Card1</CardTitle></CardHeader>
               <CardContent className="flex flex-wrap gap-2">
@@ -207,7 +207,7 @@ export default async function ProfilePage({
                 <ContactButton />
               </CardContent>
             </Card>
-          </div>
+          </div>*/}
         </div>
       </div>
     </div>
