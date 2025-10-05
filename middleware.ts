@@ -11,7 +11,7 @@ export async function middleware(req: NextRequest) {
   const url = req.nextUrl
   const token = url.searchParams.get('t')
 
-  // 1) ?t= があれば検証 → Cookie発行 → クリーンURLへ
+  // 1) ?t= があれば検証→Cookie発行→クリーンURLへ
   if (token) {
     const payload = await verifyAndGetPayload(token)
     if (payload) {
@@ -23,20 +23,20 @@ export async function middleware(req: NextRequest) {
         httpOnly: true,
         secure: true,
         sameSite: 'strict',
-        maxAge: Math.max(1, Math.floor((payload.exp - Date.now()) / 1000)) // exp に合わせる
+        maxAge: Math.max(1, Math.floor((payload.exp - Date.now()) / 1000))
       })
       return res
     }
   }
 
-  // 2) 既にCookieが有効なら通す
+  // 2) 既存Cookieが有効なら通す
   const cookie = req.cookies.get(COOKIE_NAME)?.value
   if (cookie) {
     const payload = await verifyAndGetPayload(cookie)
     if (payload) return NextResponse.next()
   }
 
-  // 3) 公開してよいページ（必要に応じて拡張）
+  // 3) 公開ページ（必要なら追加）
   if (url.pathname.startsWith('/access-denied')) return NextResponse.next()
 
   // 4) それ以外は拒否
