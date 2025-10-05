@@ -145,20 +145,20 @@ export default async function ProfilePage({
                   <p className="font-semibold text-gray-900 truncate">{user.stage}</p>
                 </CardContent>
               </Card>
-              <Card>
+              {/*<Card>
                 <CardContent className="p-3 sm:p-4 text-center">
                   <Banknote className="w-5 h-5 text-green-600 mx-auto mb-2" />
                   <p className="text-xs text-gray-600">Annual APR</p>
                   <p className="font-semibold text-gray-900">{user.annualapr.toLocaleString()}</p>
                 </CardContent>
               </Card>
-              <Card>
+              {/*<Card>
                 <CardContent className="p-3 sm:p-4 text-center">
                   <TrendingUp className="w-5 h-5 text-purple-600 mx-auto mb-2" />
                   <p className="text-xs text-gray-600">Raised</p>
                   <p className="font-semibold text-gray-900 truncate">{user.raised}</p>
                 </CardContent>
-              </Card>
+              </Card>*/}
             </div>
           </div>
           <ActionButtons linkedinurl={normalizedUrl} />
