@@ -9,45 +9,51 @@ const COOKIE_NAME = 'event_auth'
 
 export async function middleware(req: NextRequest) {
   const url = req.nextUrl
-
-  // 1) QRのURLに ?t= が付いていたら検証してCookie発行 → パラメータを消してリダイレクト
   const token = url.searchParams.get('t')
-  if (token && await verify(token)) {
-    const clean = new URL(url.href)
-    clean.searchParams.delete('t')
-    const res = NextResponse.redirect(clean)
-    res.cookies.set(COOKIE_NAME, token, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'strict',
-      maxAge: 60 * 60 * 24 * 7// 1week
-    })
-    return res
+
+  // 1) ?t= があれば検証 → Cookie発行 → クリーンURLへ
+  if (token) {
+    const payload = await verifyAndGetPayload(token)
+    if (payload) {
+      const clean = new URL(url.href)
+      clean.searchParams.delete('t')
+
+      const res = NextResponse.redirect(clean)
+      res.cookies.set(COOKIE_NAME, token, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'strict',
+        maxAge: Math.max(1, Math.floor((payload.exp - Date.now()) / 1000)) // exp に合わせる
+      })
+      return res
+    }
   }
 
-  // 2) 既にCookieがあれば通す
+  // 2) 既にCookieが有効なら通す
   const cookie = req.cookies.get(COOKIE_NAME)?.value
-  if (cookie && await verify(cookie)) return NextResponse.next()
+  if (cookie) {
+    const payload = await verifyAndGetPayload(cookie)
+    if (payload) return NextResponse.next()
+  }
 
-  // 3) 誰でも見せてよいページを許可（必要に応じて調整）
-  if (['/access-denied'].some(p => url.pathname.startsWith(p))) return NextResponse.next()
+  // 3) 公開してよいページ（必要に応じて拡張）
+  if (url.pathname.startsWith('/access-denied')) return NextResponse.next()
 
-  // 4) ここまでで通らない場合は拒否
-  const deny = new URL('/access-denied', req.url)
-  return NextResponse.redirect(deny)
+  // 4) それ以外は拒否
+  return NextResponse.redirect(new URL('/access-denied', req.url))
 }
 
-async function verify(token: string) {
+async function verifyAndGetPayload(token: string): Promise<{ exp: number } | null> {
   try {
     const [payloadB64, sigB64] = token.split('.')
-    if (!payloadB64 || !sigB64) return false
+    if (!payloadB64 || !sigB64) return null
 
-    const payloadJson = JSON.parse(new TextDecoder().decode(b64urlToBytes(payloadB64)))
-    if (typeof payloadJson.exp !== 'number' || Date.now() > payloadJson.exp) return false
+    const secret = process.env.EVENT_TOKEN_SECRET || ''
+    if (!secret) return null
 
     const key = await crypto.subtle.importKey(
       'raw',
-      new TextEncoder().encode(process.env.EVENT_TOKEN_SECRET || ''),
+      new TextEncoder().encode(secret),
       { name: 'HMAC', hash: 'SHA-256' },
       false,
       ['verify']
@@ -59,10 +65,14 @@ async function verify(token: string) {
       b64urlToBytes(sigB64),
       new TextEncoder().encode(payloadB64)
     )
+    if (!ok) return null
 
-    return !!ok
+    const payload = JSON.parse(new TextDecoder().decode(b64urlToBytes(payloadB64)))
+    if (typeof payload.exp !== 'number' || Date.now() > payload.exp) return null
+
+    return payload
   } catch {
-    return false
+    return null
   }
 }
 
