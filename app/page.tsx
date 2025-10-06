@@ -177,9 +177,9 @@ export default function HomePage() {
           ))}
         </div>
 
-        <div className="text-center mt-10">
+        {/*<div className="text-center mt-10">
           <Button variant="outline">Load More Connections</Button>
-        </div>
+        </div>*/}
       </main>
     </div>
   );
