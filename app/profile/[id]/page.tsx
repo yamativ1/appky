@@ -171,16 +171,16 @@ export default async function ProfilePage({
           {/* 左 */}
           <div className="lg:col-span-2 space-y-4">
             <Card>
-              <CardHeader><CardTitle>Purpose of Participation</CardTitle></CardHeader>
-              <CardContent>{user.objective}</CardContent>
-            </Card>
-            <Card>
-              <CardHeader><CardTitle>Company Information</CardTitle></CardHeader>
+              <CardHeader><CardTitle>Company</CardTitle></CardHeader>
               <CardContent>
                 <p className="font-bold text-xl">{user.company}</p>
                 <p className="font-semibold">{user.industry}</p>
                 <p className="mt-2">{user.description}</p>
               </CardContent>
+            </Card>
+            <Card>
+              <CardHeader><CardTitle>Purpose of Participation</CardTitle></CardHeader>
+              <CardContent>{user.objective}</CardContent>
             </Card>
             <Card>
               <CardHeader><CardTitle>Remarks</CardTitle></CardHeader>

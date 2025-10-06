@@ -2,7 +2,7 @@
 import { NextResponse, type NextRequest } from 'next/server'
 
 export const config = {
-  // 静的アセット等を除いて全ルートに適用
+  // 静的アセット等を除外して全ルートに適用
   matcher: ['/((?!_next/static|_next/image|favicon.ico).*)']
 }
 
@@ -12,32 +12,40 @@ export async function middleware(req: NextRequest) {
   const url = req.nextUrl
   const token = url.searchParams.get('t')
 
-  // 1) QRの ?t= を受けたら検証 → Cookie を発行しつつ「rewrite」で 200 を返す
+  // === 開発用バイパス ===
+  // production 以外（= npm run dev 等）は認証をスキップ。
+  // ただし、ローカルでもゲートを試したい時は FORCE_AUTH=1 を一時的に設定。
+  const isProd = process.env.NODE_ENV === 'production'
+  const forceAuth = process.env.FORCE_AUTH === '1'
+  if (!isProd && !forceAuth) {
+    return NextResponse.next()
+  }
+  // === ここから先は従来の保護ロジック ===
+
+  // 1) QR の ?t= を受けたら検証 → Cookie を付けつつ rewrite で 200 を返す
   if (token) {
     const payload = await verifyAndGetPayload(token)
     if (payload) {
-      // ← ここを redirect ではなく rewrite にするのが今回の肝
-      // 表示はトップ( / )にしたい想定。別ページなら書き換えてOK。
       const res = NextResponse.rewrite(new URL('/', req.url))
       res.cookies.set(COOKIE_NAME, token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production', // 本番のみ Secure、ローカルは false
-        sameSite: 'lax',   // リダイレクト/ナビゲーションでの互換性を上げる
-        path: '/',         // 明示
-        maxAge: Math.max(1, Math.floor((payload.exp - Date.now()) / 1000)) // exp に揃える
+        secure: isProd,      // 本番のみ Secure（ローカルHTTPでは自動でfalse）
+        sameSite: 'lax',     // 互換性重視
+        path: '/',
+        maxAge: Math.max(1, Math.floor((payload.exp - Date.now()) / 1000)) // exp に合わせる
       })
       return res
     }
   }
 
-  // 2) 既存 Cookie が正しければ通す
+  // 2) Cookie が有効なら通す
   const cookie = req.cookies.get(COOKIE_NAME)?.value
   if (cookie) {
     const payload = await verifyAndGetPayload(cookie)
     if (payload) return NextResponse.next()
   }
 
-  // 3) 例外（拒否ページ自体は表示させる）
+  // 3) 例外（拒否ページ自体は表示）
   if (url.pathname.startsWith('/access-denied')) return NextResponse.next()
 
   // 4) それ以外は拒否

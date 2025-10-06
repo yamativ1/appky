@@ -116,10 +116,13 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-gray-50">
 
-      {/* Header */}
-      <div className="sticky top-0 z-50 bg-white border-b">
+      {/* Header：薄く（56px） */}
+    <div className="sticky top-9 z-50 bg-white border-b h-5">
+      <div className="h-full max-w-7xl mx-auto px-4 flex items-center
+                      leading-tight [&_h1]:m-0 [&_p]:m-0">
         <NetworkHeader attendeeCount={users.length} />
       </div>
+    </div>
 
       {/* Filter */}
       <div className="sticky top-[120px] z-40 bg-gray-50 border-b h-[135px] will-change-transform">
