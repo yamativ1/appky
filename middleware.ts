@@ -2,6 +2,7 @@
 import { NextResponse, type NextRequest } from 'next/server'
 
 export const config = {
+  // 静的アセット等を除いて全ルートに適用
   matcher: ['/((?!_next/static|_next/image|favicon.ico).*)']
 }
 
@@ -11,43 +12,35 @@ export async function middleware(req: NextRequest) {
   const url = req.nextUrl
   const token = url.searchParams.get('t')
 
-  // 観測ログ（Vercel: Functions → Logs に出ます）
-  console.log('[mw] hasSecret:', !!process.env.EVENT_TOKEN_SECRET, 'path:', url.pathname, 'hasToken:', !!token)
-
-  // 1) ?t= が来たら検証 → Cookie 発行 → クエリ除去リダイレクト
+  // 1) QRの ?t= を受けたら検証 → Cookie を発行しつつ「rewrite」で 200 を返す
   if (token) {
     const payload = await verifyAndGetPayload(token)
-    console.log('[mw] verify on query:', !!payload)
     if (payload) {
-      const clean = new URL(url.href)
-      clean.searchParams.delete('t')
-
-      const res = NextResponse.redirect(clean)
+      // ← ここを redirect ではなく rewrite にするのが今回の肝
+      // 表示はトップ( / )にしたい想定。別ページなら書き換えてOK。
+      const res = NextResponse.rewrite(new URL('/', req.url))
       res.cookies.set(COOKIE_NAME, token, {
         httpOnly: true,
-        secure: true,
-        sameSite: 'strict',
-        maxAge: Math.max(1, Math.floor((payload.exp - Date.now()) / 1000)) // exp と一致
+        secure: process.env.NODE_ENV === 'production', // 本番のみ Secure、ローカルは false
+        sameSite: 'lax',   // リダイレクト/ナビゲーションでの互換性を上げる
+        path: '/',         // 明示
+        maxAge: Math.max(1, Math.floor((payload.exp - Date.now()) / 1000)) // exp に揃える
       })
       return res
     }
   }
 
-  // 2) Cookie が有効なら通す
+  // 2) 既存 Cookie が正しければ通す
   const cookie = req.cookies.get(COOKIE_NAME)?.value
   if (cookie) {
     const payload = await verifyAndGetPayload(cookie)
-    console.log('[mw] verify on cookie:', !!payload)
     if (payload) return NextResponse.next()
-  } else {
-    console.log('[mw] cookie missing')
   }
 
-  // 3) 公開ページの例外
+  // 3) 例外（拒否ページ自体は表示させる）
   if (url.pathname.startsWith('/access-denied')) return NextResponse.next()
 
-  // 4) 否認
-  console.log('[mw] deny → /access-denied')
+  // 4) それ以外は拒否
   return NextResponse.redirect(new URL('/access-denied', req.url))
 }
 
@@ -79,8 +72,7 @@ async function verifyAndGetPayload(token: string): Promise<{ exp: number } | nul
     if (typeof payload.exp !== 'number' || Date.now() > payload.exp) return null
 
     return payload
-  } catch (e) {
-    console.log('[mw] verify error')
+  } catch {
     return null
   }
 }
