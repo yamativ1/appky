@@ -15,7 +15,7 @@ type User = {
   photo: string;
   company: string;
   industry: string[];
-  title: 'Investor' | 'Startup' | 'Engineer' | 'Corporate' | 'Advisor' | 'Other';
+  title: 'Angel Investor' | 'Venture Capitalist' | 'Limited Partner' | 'Startup' | 'Engineer' | 'Corporate' | 'Advisor' | 'Other';
   stage: string;
   objective: string[];
   location: string;
@@ -30,15 +30,17 @@ type User = {
 
 function classifyTitle(titleRaw: string): User['title'] {
   const title = titleRaw.toLowerCase();
-  if (/(investor|vc|venture|angel|scout|partner|capital|lp|gp|deal flow)/.test(title)) return 'Investor';
+  if (/(angel|  flow)/.test(title)) return 'Angel Investor';
+  if (/(vc|venture| flow)/.test(title)) return 'Venture Capitalist';
+  if (/(lp|limited|parners|lps flow)/.test(title)) return 'Limited Partner';
   if (/(founder|co[-\s]?founder|ceo|cto|cxo|startup|entrepreneur)/.test(title)) return 'Startup';
   if (/(engineer|developer|software|technical|cpo|product manager)/.test(title)) return 'Engineer';
-  if (/(vp|head of|manager|director|executive|lead|gm|principal)/.test(title)) return 'Corporate';
+  if (/(head of|manager|director|executive|lead|gm|principal)/.test(title)) return 'Corporate';
   if (/(advisor|consultant|attorney|counsel|mentor|strategist|staff)/.test(title)) return 'Advisor';
   return 'Other';
 }
 
-const titleOptions: User['title'][] = ['Investor', 'Startup', 'Engineer', 'Corporate', 'Advisor', 'Other'];
+const titleOptions: User['title'][] = ['Angel Investor','Venture Capitalist','Limited Partner','Startup','Engineer','Corporate','Advisor','Other'];
 const stageOptions = [
   'Pre-Seed',
   'Seed',

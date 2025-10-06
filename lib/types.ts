@@ -4,7 +4,7 @@ export type User = {
   photo: string;
   company: string;
   industry: string[];
-  title: 'Investor' | 'Startup' | 'Engineer' | 'Corporate' | 'Advisor' | 'Other';
+  title: 'Angel Investor' | 'Venture Capitalist' | 'Limited Partner' | 'Startup' | 'Engineer' | 'Corporate' | 'Advisor' | 'Other';
   stage: string;
   objective: string[];
   location: string;

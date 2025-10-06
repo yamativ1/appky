@@ -73,7 +73,7 @@ export default function UserCard({ user }: UserCardProps) {
             className="w-16 h-16 sm:w-16 sm:h-16 lg:w-20 lg:h-20 rounded-full object-cover border-2 sm:border-4 border-white shadow-md mb-5 sm:mb-0"
           />
 
-          <div className="absolute -bottom-[5px] -right-1 sm:-bottom-4 sm:right-2 z-10">
+          <div className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2">
             <Badge 
               variant="outline" 
               className={`text-xs px-1.5 py-0.5 sm:px-1.5 lg:px-2 lg:py-1 ${attributeColors[userCategory]} whitespace-nowrap`}
