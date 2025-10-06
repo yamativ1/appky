@@ -2,7 +2,7 @@
 import { createHmac, randomBytes } from 'crypto'
 
 // 環境変数から設定（未指定時のデフォルトも用意）
-const BASE_URL = process.env.BASE_URL || 'https://<あなたのドメイン>.vercel.app'
+const BASE_URL = process.env.BASE_URL || 'https://appky.vercel.app/'
 const SECRET = process.env.EVENT_TOKEN_SECRET || ''
 const HOURS = Number(process.env.HOURS || 1) // 既定1時間
 
