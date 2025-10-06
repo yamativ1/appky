@@ -11,9 +11,13 @@ export async function middleware(req: NextRequest) {
   const url = req.nextUrl
   const token = url.searchParams.get('t')
 
-  // 1) ?t= があれば検証→Cookie発行→クリーンURLへ
+  // 観測ログ（Vercel: Functions → Logs に出ます）
+  console.log('[mw] hasSecret:', !!process.env.EVENT_TOKEN_SECRET, 'path:', url.pathname, 'hasToken:', !!token)
+
+  // 1) ?t= が来たら検証 → Cookie 発行 → クエリ除去リダイレクト
   if (token) {
     const payload = await verifyAndGetPayload(token)
+    console.log('[mw] verify on query:', !!payload)
     if (payload) {
       const clean = new URL(url.href)
       clean.searchParams.delete('t')
@@ -23,23 +27,27 @@ export async function middleware(req: NextRequest) {
         httpOnly: true,
         secure: true,
         sameSite: 'strict',
-        maxAge: Math.max(1, Math.floor((payload.exp - Date.now()) / 1000))
+        maxAge: Math.max(1, Math.floor((payload.exp - Date.now()) / 1000)) // exp と一致
       })
       return res
     }
   }
 
-  // 2) 既存Cookieが有効なら通す
+  // 2) Cookie が有効なら通す
   const cookie = req.cookies.get(COOKIE_NAME)?.value
   if (cookie) {
     const payload = await verifyAndGetPayload(cookie)
+    console.log('[mw] verify on cookie:', !!payload)
     if (payload) return NextResponse.next()
+  } else {
+    console.log('[mw] cookie missing')
   }
 
-  // 3) 公開ページ（必要なら追加）
+  // 3) 公開ページの例外
   if (url.pathname.startsWith('/access-denied')) return NextResponse.next()
 
-  // 4) それ以外は拒否
+  // 4) 否認
+  console.log('[mw] deny → /access-denied')
   return NextResponse.redirect(new URL('/access-denied', req.url))
 }
 
@@ -71,7 +79,8 @@ async function verifyAndGetPayload(token: string): Promise<{ exp: number } | nul
     if (typeof payload.exp !== 'number' || Date.now() > payload.exp) return null
 
     return payload
-  } catch {
+  } catch (e) {
+    console.log('[mw] verify error')
     return null
   }
 }
