@@ -73,7 +73,7 @@ export default function UserCard({ user }: UserCardProps) {
             className="w-16 h-16 sm:w-16 sm:h-16 lg:w-20 lg:h-20 rounded-full object-cover border-2 sm:border-4 border-white shadow-md mb-5 sm:mb-0"
           />
 
-          <div className="absolute -bottom-[5px] -right-1 sm:-bottom-4 sm:-right-2 z-10">
+          <div className="absolute -bottom-[5px] -right-1 sm:-bottom-4 sm:right-2 z-10">
             <Badge 
               variant="outline" 
               className={`text-xs px-1.5 py-0.5 sm:px-1.5 lg:px-2 lg:py-1 ${attributeColors[userCategory]} whitespace-nowrap`}
@@ -111,13 +111,13 @@ export default function UserCard({ user }: UserCardProps) {
             {user.description}
           </p> */}
 
-          {/* Location & Connections */}
+          {/* Location & Connections
           <div className="flex items-center justify-between w-full text-xs text-gray-500 pt-2 sm:pt-2 border-t border-gray-100 px-1 sm:px-2 lg:px-0 min-w-0">
             <div className="flex items-center min-w-0 flex-1">
               <MapPin className="w-3 h-3 mr-1" />
               <span className="truncate min-w-0">{user.location}</span>
             </div>
-          </div>
+          </div> */}
 
           {/* Action Button */}
           <Link href={`/profile/${user.id}`} className="w-full">
