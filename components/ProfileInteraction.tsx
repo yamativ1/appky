@@ -1,18 +1,41 @@
-'use client';
+'use client'
 
-import { ArrowLeft, Mail, ExternalLink } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
+import { ArrowLeft, Mail, ExternalLink } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { useRouter } from 'next/navigation'
 
 export function BackButton() {
+  const router = useRouter()
+
+  const handleBack = () => {
+    if (typeof window === 'undefined') return
+
+    // App Router では history.state?.idx が 0 のとき直リンクの可能性あり
+    const hasHistory =
+      (window.history.state && typeof window.history.state.idx === 'number'
+        ? window.history.state.idx > 0
+        : window.history.length > 1)
+
+    if (hasHistory) {
+      router.back()
+      return
+    }
+
+    // 直リンク等で履歴がない場合のフォールバック
+    const fallback = sessionStorage.getItem('lastListURL') || '/'
+    router.push(fallback, { scroll: false })
+  }
+
   return (
-    <Link href="/">
-      <Button variant="outline" className="mb-4 sm:mb-6 hover:bg-gray-50 h-9 sm:h-10 text-sm sm:text-base">
-        <ArrowLeft className="w-4 h-4 mr-2" />
-        Back to Network
-      </Button>
-    </Link>
-  );
+    <Button
+      variant="outline"
+      onClick={handleBack}
+      className="mb-4 sm:mb-6 hover:bg-gray-50 h-9 sm:h-10 text-sm sm:text-base"
+    >
+      <ArrowLeft className="w-4 h-4 mr-2" />
+      Back to Network
+    </Button>
+  )
 }
 
 export function ActionButtons({ linkedinurl }: { linkedinurl: string }) {
@@ -28,7 +51,7 @@ export function ActionButtons({ linkedinurl }: { linkedinurl: string }) {
         Connect on LinkedIn
       </a>
     </div>
-  );
+  )
 }
 
 export function ContactButton() {
@@ -37,5 +60,5 @@ export function ContactButton() {
       <Mail className="w-4 h-4 mr-2" />
       Send Message
     </Button>
-  );
+  )
 }
